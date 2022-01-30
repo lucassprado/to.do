@@ -9,51 +9,51 @@ import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
 import { TodoInput } from '../components/TodoInput';
 
-interface editTaskProps {
-  id: number;
-  newTitle: string;
+export interface EditTaskProps {
+  taskId: number;
+  taskNewTitle: string;
 }
 
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   function handleAddTask(newTaskTitle: string) {
-    const existsTask = tasks.find(task => task.title === newTaskTitle)
+    const taskWithSameTitle = tasks.find(task => task.title === newTaskTitle);
     
-    if (!existsTask) {
-      const task = {
-        id: new Date().getTime(),
-        title: newTaskTitle,
-        done: false
-      }
-      setTasks(oldState => [...oldState, task]);
-    } else {
-      Alert.alert(
+    if (taskWithSameTitle) {
+      return Alert.alert(
         "Task já cadastrada",
         "Você não pode cadastrar uma task com o mesmo nome"
-      )
+      );
     }
+    
+    const task = {
+      id: new Date().getTime(),
+      title: newTaskTitle,
+      done: false
+    }
+    setTasks(oldState => [...oldState, task]);
   }
 
-  function handleEditTask(editTask: editTaskProps) {
-    const updatedTasks = tasks.map(task => ({ ...task }))
-    const foundTask = updatedTasks.find(task => task.id === editTask.id)
+  function handleEditTask({ taskId, taskNewTitle }: EditTaskProps) {
+    const updatedTasks = tasks.map(task => ({ ...task }));
+    const taskToBeUpdated = updatedTasks.find(task => task.id === taskId);
 
-    if (!foundTask)
-      return
+    if (!taskToBeUpdated)
+      return;
     
-    foundTask.title = editTask.newTitle
+    taskToBeUpdated.title = taskNewTitle;
     setTasks(updatedTasks);
   }
 
   function handleToggleTaskDone(id: number) {
-    const updatedTasks = tasks.map(task => ({ ...task }))
-    const taskToBeMarkedAsDone = updatedTasks.find(task => task.id === id)
+    const updatedTasks = tasks.map(task => ({ ...task }));
+    const taskToBeMarkedAsDone = updatedTasks.find(task => task.id === id);
 
     if (!taskToBeMarkedAsDone)
-      return
+      return;
     
-      taskToBeMarkedAsDone.done = !taskToBeMarkedAsDone.done
+      taskToBeMarkedAsDone.done = !taskToBeMarkedAsDone.done;
     setTasks(updatedTasks);
   }
 
@@ -66,7 +66,7 @@ export function Home() {
           text: "Sim",
           onPress: () => {
             const updatedTasks = tasks.filter(task => task.id !== id)
-            return setTasks(updatedTasks)
+            setTasks(updatedTasks)
           }
         },
         {
@@ -74,7 +74,7 @@ export function Home() {
           style: "cancel"
         },
       ]
-    )
+    );
   }
 
   return (
